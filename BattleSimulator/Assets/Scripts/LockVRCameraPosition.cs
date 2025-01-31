@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class LockVRCameraPosition : MonoBehaviour
 {
-    public Vector3 fixedPosition = new Vector3(0f, 0f, 0f); // Adjust for seating position
+    private Vector3 fixedPosition = new Vector3(-2.243f, -0.3f, 0.81f); // Fixed position for the XR Rig
 
     void Start()
     {
-        // Reset position to ensure it always starts at (0,0,0)
+        // Lock XR Rig position at the fixed point
         transform.position = fixedPosition;
     }
 
     void LateUpdate()
     {
-        // Keep Camera Offset fixed in place
+        // Force XR Rig to stay at the fixed position
         transform.position = fixedPosition;
     }
 }
