@@ -2,17 +2,14 @@ using UnityEngine;
 
 public class CubeSpawner : MonoBehaviour
 {
-    public GameObject cubePrefab; // Assign the cube prefab in the Inspector
-    public Transform tableTransform; // Assign the table object in the Inspector
-
+    public GameObject cubePrefab;
+    public Transform tableTransform;
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) // Press Space to spawn a cube
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            
             SpawnCube();
-           
         }
     }
 
@@ -24,12 +21,18 @@ public class CubeSpawner : MonoBehaviour
             return;
         }
 
-        // Spawn the cube exactly at the spawner's position
-        GameObject newCube = Instantiate(cubePrefab, transform.position, transform.rotation);
+        // Randomize X and Z within ±5 units of the spawner's position
+        float randomX = transform.position.x + Random.Range(-2f, 1.5f);
+        float spawnZ = transform.position.z + Random.Range(-2f, 2f);
+        float spawnY = transform.position.y; // Keep Y the same
+
+        // Set the random spawn position
+        Vector3 spawnPosition = new Vector3(randomX, spawnY, spawnZ);
+
+        // Instantiate the cube at the calculated position
+        GameObject newCube = Instantiate(cubePrefab, spawnPosition, Quaternion.identity);
 
         // Make the cube a child of the table
         newCube.transform.SetParent(tableTransform);
-
-
     }
 }
