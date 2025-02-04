@@ -4,21 +4,13 @@ public class SphereSpawner : MonoBehaviour
 {
     public GameObject spherePrefab; // Assign the sphere prefab in the Inspector
     public Transform tableTransform; // Assign the table object in the Inspector
-    public int maxSpheres = 20; // Limit the number of spheres spawned
-    private int sphereCount = 0;
+
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Return)) // Press Enter to spawn a sphere
         {
-            if (sphereCount < maxSpheres)
-            {
-                SpawnSphere();
-            }
-            else
-            {
-                Debug.Log("Max sphere limit reached.");
-            }
+            SpawnSphere();
         }
     }
 
@@ -36,6 +28,6 @@ public class SphereSpawner : MonoBehaviour
         // Make the sphere a child of the table
         newSphere.transform.SetParent(tableTransform);
 
-        sphereCount++;
+       
     }
 }

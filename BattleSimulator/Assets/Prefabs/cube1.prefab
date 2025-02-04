@@ -150,3 +150,4 @@ MonoBehaviour:
   moveForce: 20
   stopThreshold: 0
   sizeIncreaseFactor: 1.1
+  groundCheckDistance: 0.2

@@ -7,9 +7,12 @@ public class CubeMovementScript : MonoBehaviour
     public float moveForce = 5f; // Movement force
     public float stopThreshold = 2f; // Distance to stop moving
     public float sizeIncreaseFactor = 1.1f; // Growth factor when merging
+    public float groundCheckDistance = 0.2f; // Distance for raycasting to detect table
 
     private Rigidbody rb;
     private Transform target; // Movement target
+    private bool isGrowing = false; // Flag to prevent multiple grow calls
+    private bool isOnTable = false; // Track if cube is touching or near the table
 
     void Start()
     {
@@ -17,37 +20,94 @@ public class CubeMovementScript : MonoBehaviour
         rb.isKinematic = false; // Ensure Rigidbody is NOT kinematic
     }
 
+    void Update()
+    {
+        if (transform.position.y < -1f)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void FixedUpdate()
     {
-        FindTarget(); // Find closest teammate, then Sphere
+        CheckIfOnTable(); // Use raycasting to detect the table
+
+        if (!isOnTable || !BattleManager.Instance.isBattleActive)
+        {
+            rb.useGravity = true; // Allow natural falling
+            return;
+        }
+
+        FindTarget();
 
         if (target != null)
         {
             Vector3 direction = (target.position - transform.position).normalized;
+            float scaledMoveForce = moveForce * transform.localScale.x;
 
-            // Move towards the target if not too close
             if (Vector3.Distance(transform.position, target.position) > stopThreshold)
             {
-                rb.AddForce(direction * moveForce, ForceMode.Acceleration);
+                rb.AddForce(direction * scaledMoveForce, ForceMode.Acceleration);
             }
             else
             {
-                rb.velocity = Vector3.zero; // Stop moving when close enough
+                rb.velocity = Vector3.zero;
             }
         }
     }
 
+void CheckIfOnTable()
+{
+    Vector3 origin = transform.position;
+    float objectScale = transform.localScale.x;  // Adjust based on size
+    float adjustedGroundCheckDistance = objectScale * 0.6f; // Scales with object size
+    float offset = objectScale * 0.5f; // Adjust raycast points based on size
+    bool tableDetected = false;
+    RaycastHit hit;
+
+    // Fire multiple rays from different points
+    Vector3[] raycastOrigins = new Vector3[]
+    {
+        origin,                                 // Center
+        origin + new Vector3(offset, 0, 0),    // Front
+        origin + new Vector3(-offset, 0, 0),   // Back
+        origin + new Vector3(0, 0, offset),    // Right
+        origin + new Vector3(0, 0, -offset)    // Left
+    };
+
+    foreach (Vector3 rayOrigin in raycastOrigins)
+    {
+        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, adjustedGroundCheckDistance))
+        {
+            if (hit.collider.CompareTag("Table"))
+            {
+                tableDetected = true;
+                break; // No need to check further if already detected
+            }
+        }
+    }
+
+    isOnTable = tableDetected;
+}
+
+
+
     void FindTarget()
     {
-        GameObject[] allCubes = GameObject.FindGameObjectsWithTag("Cube"); // Find all cubes
-        GameObject[] allSpheres = GameObject.FindGameObjectsWithTag("Sphere"); // Find all spheres
+        if (!isOnTable)
+        {
+            target = null;
+            return;
+        }
+
+        GameObject[] allCubes = GameObject.FindGameObjectsWithTag("Cube");
+        GameObject[] allSpheres = GameObject.FindGameObjectsWithTag("Sphere");
 
         float closestTeammateDistance = Mathf.Infinity;
         float closestSphereDistance = Mathf.Infinity;
         Transform closestTeammate = null;
         Transform closestSphere = null;
 
-        // Search for the closest teammate cube
         foreach (GameObject cube in allCubes)
         {
             CubeMovementScript cubeScript = cube.GetComponent<CubeMovementScript>();
@@ -56,7 +116,7 @@ public class CubeMovementScript : MonoBehaviour
             {
                 float distance = Vector3.Distance(transform.position, cube.transform.position);
 
-                if (cubeScript.teamTag == teamTag) // Find closest teammate
+                if (cubeScript.teamTag == teamTag)
                 {
                     if (distance < closestTeammateDistance)
                     {
@@ -67,7 +127,6 @@ public class CubeMovementScript : MonoBehaviour
             }
         }
 
-        // Search for the closest sphere (opponent)
         foreach (GameObject sphere in allSpheres)
         {
             float distance = Vector3.Distance(transform.position, sphere.transform.position);
@@ -79,47 +138,61 @@ public class CubeMovementScript : MonoBehaviour
             }
         }
 
-        // Prioritize moving to the closest teammate
         if (closestTeammate != null)
         {
             target = closestTeammate;
         }
-        // If no teammates exist, target the closest sphere
         else if (closestSphere != null)
         {
             target = closestSphere;
         }
         else
         {
-            target = null; // Stay idle if no valid targets
+            target = null;
         }
     }
 
     void OnCollisionEnter(Collision collision)
     {
+        if (isGrowing) return;
+
         CubeMovementScript otherCube = collision.gameObject.GetComponent<CubeMovementScript>();
 
-        if (otherCube != null && otherCube.teamTag == teamTag) // Only merge with teammates
+        if (otherCube != null && otherCube.teamTag == teamTag && !otherCube.isGrowing)
         {
-            if (this.transform.localScale.magnitude >= otherCube.transform.localScale.magnitude) // Bigger cube absorbs smaller one
+            float thisSize = transform.localScale.x;
+            float otherSize = otherCube.transform.localScale.x;
+
+            if (thisSize >= otherSize)
             {
+                isGrowing = true;
+                Vector3 growPosition = transform.position;
                 Grow();
+                transform.position = growPosition;
                 Destroy(otherCube.gameObject);
-            }
-            else
-            {
-                otherCube.Grow();
-                Destroy(this.gameObject);
+                isGrowing = false;
             }
         }
+        
     }
 
-void Grow()
-{
-    float growthAmount = 0.2f; // Small fixed increase in size
-    transform.localScale += new Vector3(growthAmount, growthAmount, growthAmount);
-}
+    void Grow()
+    {
+        Vector3 currentPos = transform.position;
+        Quaternion currentRot = transform.rotation;
 
+        bool wasKinematic = rb.isKinematic;
+        rb.isKinematic = true;
 
+        float growthFactor = 1.1f;
+        float newSize = transform.localScale.x * growthFactor;
+        transform.localScale = new Vector3(newSize, newSize, newSize);
 
+        rb.mass *= Mathf.Pow(growthFactor, 2);
+
+        transform.position = currentPos;
+        transform.rotation = currentRot;
+
+        rb.isKinematic = wasKinematic;
+    }
 }

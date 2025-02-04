@@ -4,21 +4,15 @@ public class CubeSpawner : MonoBehaviour
 {
     public GameObject cubePrefab; // Assign the cube prefab in the Inspector
     public Transform tableTransform; // Assign the table object in the Inspector
-    public int maxCubes = 20; // Limit the number of cubes spawned
-    private int cubeCount = 0;
+
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space)) // Press Space to spawn a cube
         {
-            if (cubeCount < maxCubes)
-            {
-                SpawnCube();
-            }
-            else
-            {
-                Debug.Log("Max cube limit reached.");
-            }
+            
+            SpawnCube();
+           
         }
     }
 
@@ -36,6 +30,6 @@ public class CubeSpawner : MonoBehaviour
         // Make the cube a child of the table
         newCube.transform.SetParent(tableTransform);
 
-        cubeCount++;
+
     }
 }

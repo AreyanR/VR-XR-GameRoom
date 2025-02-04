@@ -147,6 +147,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teamTag: TeamB
-  moveForce: 20
+  moveForce: 8
   stopThreshold: 0
   sizeIncreaseFactor: 1.1

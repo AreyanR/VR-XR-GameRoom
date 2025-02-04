@@ -383,6 +383,7 @@
 -analyzer:"D:/Users/2022.3.7f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"D:/Users/2022.3.7f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/Scripts/AnimateHandController.cs"
+"Assets/Scripts/BattleManager.cs"
 "Assets/Scripts/CubeMovementScript.cs"
 "Assets/Scripts/CubeSpawner.cs"
 "Assets/Scripts/LockVRCameraPosition.cs"
