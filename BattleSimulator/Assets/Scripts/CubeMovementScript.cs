@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class CubeMovementScript : MonoBehaviour
 {
     public string teamTag; // "TeamA" or "TeamB"
     public float moveForce = 5f; // Movement force
     public float stopThreshold = 2f; // Distance to stop moving
-    public float sizeIncreaseFactor = 1.1f; // Growth factor when merging
+    public float sizeIncreaseFactor = 0.1f; // Growth factor when merging
     public float groundCheckDistance = 0.2f; // Distance for raycasting to detect table
 
     private Rigidbody rb;
@@ -14,15 +15,27 @@ public class CubeMovementScript : MonoBehaviour
     private bool isGrowing = false; // Flag to prevent multiple grow calls
     private bool isOnTable = false; // Track if cube is touching or near the table
 
+    private Renderer cubeRenderer;
+    private Color cubeColor;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = false; // Ensure Rigidbody is NOT kinematic
+
+        cubeRenderer = GetComponent<Renderer>();
+
+        // Assign a random color at the start
+        cubeColor = new Color(Random.value, Random.value, Random.value);
+        cubeRenderer.material.color = cubeColor;
     }
 
     void Update()
     {
-        if (transform.position.y < -1f)
+        // Ensure uniform scale
+        float maxScale = Mathf.Max(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        transform.localScale = new Vector3(maxScale, maxScale, maxScale);
+        if (transform.position.y < 0.65f)
         {
             Destroy(gameObject);
         }
@@ -153,28 +166,42 @@ void CheckIfOnTable()
     }
 
     void OnCollisionEnter(Collision collision)
+{
+    if (isGrowing) return;
+
+    CubeMovementScript otherCube = collision.gameObject.GetComponent<CubeMovementScript>();
+
+    if (otherCube != null && otherCube.teamTag == teamTag && !otherCube.isGrowing)
     {
-        if (isGrowing) return;
+        XRGrabInteractable thisGrab = GetComponent<XRGrabInteractable>();
+        XRGrabInteractable otherGrab = otherCube.GetComponent<XRGrabInteractable>();
 
-        CubeMovementScript otherCube = collision.gameObject.GetComponent<CubeMovementScript>();
+        bool thisIsHeld = thisGrab != null && thisGrab.isSelected;
+        bool otherIsHeld = otherGrab != null && otherGrab.isSelected;
 
-        if (otherCube != null && otherCube.teamTag == teamTag && !otherCube.isGrowing)
+        // Prevent merging if either cube is currently held
+        if (thisIsHeld || otherIsHeld)
         {
-            float thisSize = transform.localScale.x;
-            float otherSize = otherCube.transform.localScale.x;
-
-            if (thisSize >= otherSize)
-            {
-                isGrowing = true;
-                Vector3 growPosition = transform.position;
-                Grow();
-                transform.position = growPosition;
-                Destroy(otherCube.gameObject);
-                isGrowing = false;
-            }
+            return;
         }
-        
+
+        float thisSize = transform.localScale.x;
+        float otherSize = otherCube.transform.localScale.x;
+
+        if (thisSize >= otherSize)
+        {
+            isGrowing = true;
+            cubeColor = Color.Lerp(cubeColor, otherCube.cubeColor, 0.5f);
+            cubeRenderer.material.color = cubeColor;
+            Vector3 growPosition = transform.position;
+            Grow();
+            transform.position = growPosition;
+            Destroy(otherCube.gameObject);
+            isGrowing = false;
+        }
     }
+}
+
 
     void Grow()
     {
@@ -184,7 +211,7 @@ void CheckIfOnTable()
         bool wasKinematic = rb.isKinematic;
         rb.isKinematic = true;
 
-        float growthFactor = 1.1f;
+        float growthFactor = 1.05f;
         float newSize = transform.localScale.x * growthFactor;
         transform.localScale = new Vector3(newSize, newSize, newSize);
 

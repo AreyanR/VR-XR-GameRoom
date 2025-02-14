@@ -5,15 +5,8 @@ public class SphereSpawner : MonoBehaviour
     public GameObject spherePrefab; // Assign the sphere prefab in the Inspector
     public Transform tableTransform; // Assign the table object in the Inspector
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Return)) // Press Enter to spawn a sphere
-        {
-            SpawnSphere();
-        }
-    }
 
-    void SpawnSphere()
+    public void SpawnSphere()
     {
         if (spherePrefab == null || tableTransform == null)
         {
@@ -22,8 +15,8 @@ public class SphereSpawner : MonoBehaviour
         }
 
         // Generate random X and Z within ±5 units of the spawner's position
-        float randomX = transform.position.x + Random.Range(-2f, 1.5f);
-        float spawnZ = transform.position.z + Random.Range(-2f, 2f);
+        float randomX = transform.position.x + Random.Range(-0.6f, 0.5f);
+        float spawnZ = transform.position.z + Random.Range(-0.7f, 0.7f);
         float spawnY = transform.position.y; // Keep Y the same
 
         // Set the random spawn position

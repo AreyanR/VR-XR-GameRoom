@@ -388,6 +388,7 @@
 "Assets/Scripts/CubeSpawner.cs"
 "Assets/Scripts/LockVRCameraPosition.cs"
 "Assets/Scripts/SetPokeToFingerAttachPoint.cs"
+"Assets/Scripts/spawnertest.cs"
 "Assets/Scripts/SphereMovmentScript.cs"
 "Assets/Scripts/SphereSpawner.cs"
 -langversion:9.0

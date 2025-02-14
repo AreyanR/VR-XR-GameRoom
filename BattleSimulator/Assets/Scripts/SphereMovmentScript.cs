@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class SphereMovementScript : MonoBehaviour
 {
     public string teamTag; // "TeamA" or "TeamB"
     public float moveForce = 5f; // Movement force
     public float stopThreshold = 2f; // Distance to stop moving
-    public float sizeIncreaseFactor = 1.1f; // Growth factor when merging
+    public float sizeIncreaseFactor = 0.1f; // Growth factor when merging
     public float groundCheckDistance = 0.2f; // Distance for raycasting to detect table
 
     private Rigidbody rb;
@@ -14,19 +15,33 @@ public class SphereMovementScript : MonoBehaviour
     private bool isGrowing = false; // Prevent multiple grow calls
     private bool isOnTable = false; // Track if sphere is near the table
 
+    private Renderer sphereRenderer;
+    private Color sphereColor;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = false; // Ensure Rigidbody is NOT kinematic
+
+        sphereRenderer = GetComponent<Renderer>();
+
+        // Assign a random color at the start
+        sphereColor = new Color(Random.value, Random.value, Random.value);
+        sphereRenderer.material.color = sphereColor;
     }
 
     void Update()
+{
+    // Ensure uniform scale
+    float maxScale = Mathf.Max(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+    transform.localScale = new Vector3(maxScale, maxScale, maxScale);
+
+    if (transform.position.y < 0.65f)
     {
-        if (transform.position.y < -1f)
-        {
-            Destroy(gameObject);
-        }
+        Destroy(gameObject);
     }
+}
+
 
     void FixedUpdate()
     {
@@ -155,45 +170,62 @@ void CheckIfOnTable()
     }
 
     void OnCollisionEnter(Collision collision)
+{
+    if (isGrowing) return;
+
+    SphereMovementScript otherSphere = collision.gameObject.GetComponent<SphereMovementScript>();
+
+    if (otherSphere != null && otherSphere.teamTag == teamTag && !otherSphere.isGrowing)
     {
-        if (isGrowing) return;
+        XRGrabInteractable thisGrab = GetComponent<XRGrabInteractable>();
+        XRGrabInteractable otherGrab = otherSphere.GetComponent<XRGrabInteractable>();
 
-        SphereMovementScript otherSphere = collision.gameObject.GetComponent<SphereMovementScript>();
+        bool thisIsHeld = thisGrab != null && thisGrab.isSelected;
+        bool otherIsHeld = otherGrab != null && otherGrab.isSelected;
 
-        if (otherSphere != null && otherSphere.teamTag == teamTag && !otherSphere.isGrowing)
+        // Prevent merging if either sphere is currently held
+        if (thisIsHeld || otherIsHeld)
         {
-            float thisSize = transform.localScale.x;
-            float otherSize = otherSphere.transform.localScale.x;
+            return;
+        }
 
-            if (thisSize >= otherSize)
-            {
-                isGrowing = true;
-                Vector3 growPosition = transform.position;
-                Grow();
-                transform.position = growPosition;
-                Destroy(otherSphere.gameObject);
-                isGrowing = false;
-            }
+        float thisSize = transform.localScale.x;
+        float otherSize = otherSphere.transform.localScale.x;
+
+        if (thisSize >= otherSize)
+        {
+            isGrowing = true;
+            sphereColor = Color.Lerp(sphereColor, otherSphere.sphereColor, 0.5f);
+            sphereRenderer.material.color = sphereColor;
+            Vector3 growPosition = transform.position;
+            Grow();
+            transform.position = growPosition;
+            Destroy(otherSphere.gameObject);
+            isGrowing = false;
         }
     }
+}
 
     void Grow()
-    {
-        Vector3 currentPos = transform.position;
-        Quaternion currentRot = transform.rotation;
+{
+    Vector3 currentPos = transform.position;
+    Quaternion currentRot = transform.rotation;
 
-        bool wasKinematic = rb.isKinematic;
-        rb.isKinematic = true;
+    bool wasKinematic = rb.isKinematic;
+    rb.isKinematic = true;
 
-        float growthFactor = 1.1f;
-        float newSize = transform.localScale.x * growthFactor;
-        transform.localScale = new Vector3(newSize, newSize, newSize);
+    float growthFactor = 1.05f;
+    float newSize = transform.localScale.x * growthFactor;
+    
+    // Apply uniform scaling
+    transform.localScale = new Vector3(newSize, newSize, newSize);
 
-        rb.mass *= Mathf.Pow(growthFactor, 2);
+    rb.mass *= Mathf.Pow(growthFactor, 2);
 
-        transform.position = currentPos;
-        transform.rotation = currentRot;
+    transform.position = currentPos;
+    transform.rotation = currentRot;
 
-        rb.isKinematic = wasKinematic;
-    }
+    rb.isKinematic = wasKinematic;
+}
+
 }

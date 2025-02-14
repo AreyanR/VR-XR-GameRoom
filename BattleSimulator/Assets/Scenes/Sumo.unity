@@ -123,6 +123,39 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &134854154
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 134854155}
+  m_Layer: 0
+  m_Name: BattleTable
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &134854155
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134854154}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.1629667, y: -0.82903004, z: 2.784217}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1708487458}
+  - {fileID: 524029925}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &524029923
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,7 +167,7 @@ GameObject:
   - component: {fileID: 524029925}
   - component: {fileID: 524029924}
   m_Layer: 0
-  m_Name: BattkeManager
+  m_Name: BattleManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,12 +194,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 524029923}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.1469963, y: 2.8786745, z: 5.270975}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -4.309963, y: 3.7077045, z: 2.4867582}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 134854155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &642585114
 PrefabInstance:
@@ -174,7 +207,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 134854155}
     m_Modifications:
     - target: {fileID: 1610110846918286, guid: 5c2dbd023beb8164fbb77c4ace48de98, type: 3}
       propertyPath: m_IsActive
@@ -198,19 +231,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4328799709381630, guid: 5c2dbd023beb8164fbb77c4ace48de98, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.3233933
+      value: 0.32339326
       objectReference: {fileID: 0}
     - target: {fileID: 4328799709381630, guid: 5c2dbd023beb8164fbb77c4ace48de98, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -2.1629667
       objectReference: {fileID: 0}
     - target: {fileID: 4328799709381630, guid: 5c2dbd023beb8164fbb77c4ace48de98, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.82903004
       objectReference: {fileID: 0}
     - target: {fileID: 4328799709381630, guid: 5c2dbd023beb8164fbb77c4ace48de98, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -2.784217
       objectReference: {fileID: 0}
     - target: {fileID: 4328799709381630, guid: 5c2dbd023beb8164fbb77c4ace48de98, type: 3}
       propertyPath: m_LocalRotation.w
@@ -373,7 +406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 672f43288ed6f7948b80100e3459f4f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cubePrefab: {fileID: 5410044754973232780, guid: dbdcbc74ea2b07a4e96ae4f246f4343b, type: 3}
+  cubePrefab: {fileID: 2385139158912745503, guid: eb44d8a1bfa6e8b4a8665db3ff3b2aa7, type: 3}
   tableTransform: {fileID: 1708487458}
 --- !u!4 &1331763888
 Transform:
@@ -565,5 +598,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 2127511152}
   - {fileID: 1018737570}
-  - {fileID: 642585114}
-  - {fileID: 524029925}
+  - {fileID: 134854155}

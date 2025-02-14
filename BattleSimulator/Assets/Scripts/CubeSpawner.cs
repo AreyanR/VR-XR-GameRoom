@@ -5,15 +5,7 @@ public class CubeSpawner : MonoBehaviour
     public GameObject cubePrefab;
     public Transform tableTransform;
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SpawnCube();
-        }
-    }
-
-    void SpawnCube()
+    public void SpawnCube()
     {
         if (cubePrefab == null || tableTransform == null)
         {
@@ -22,8 +14,8 @@ public class CubeSpawner : MonoBehaviour
         }
 
         // Randomize X and Z within ±5 units of the spawner's position
-        float randomX = transform.position.x + Random.Range(-2f, 1.5f);
-        float spawnZ = transform.position.z + Random.Range(-2f, 2f);
+        float randomX = transform.position.x + Random.Range(-0.5f, 0.5f);
+        float spawnZ = transform.position.z + Random.Range(-0.7f, 0.7f);
         float spawnY = transform.position.y; // Keep Y the same
 
         // Set the random spawn position

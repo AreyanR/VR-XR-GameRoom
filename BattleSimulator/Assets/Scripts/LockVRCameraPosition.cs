@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LockVRCameraPosition : MonoBehaviour
 {
-    private Vector3 fixedPosition = new Vector3(-2.243f, -0.3f, 0.81f); // Fixed position for the XR Rig
+    private Vector3 fixedPosition = new Vector3(-2.243f, -0.1f, 0.71f); // Fixed position for the XR Rig
 
     void Start()
     {

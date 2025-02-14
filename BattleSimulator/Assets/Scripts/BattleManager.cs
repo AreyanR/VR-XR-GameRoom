@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    public static BattleManager Instance; // Singleton to access battle state anywhere
-    public bool isBattleActive = false; // Battle state
+    public static BattleManager Instance; 
+    public bool isBattleActive = false; 
 
     void Awake()
     {
@@ -19,25 +19,19 @@ public class BattleManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S)) // Press S to start battle
+        // Exit the game when Escape is pressed
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            isBattleActive = true;
-            Debug.Log("Battle Started!");
-        }
-
-        if (Input.GetKeyDown(KeyCode.E)) // Press E to end battle
-        {
-            isBattleActive = false;
-            Debug.Log("Battle Ended!");
-        }
-
-        if (Input.GetKeyDown(KeyCode.T)) // Press T to delete all Cubes and Spheres
-        {
-            DeleteAllShapes();
+            Application.Quit();
         }
     }
+    public void ToggleBattleState()
+    {
+        isBattleActive = !isBattleActive;
+        Debug.Log(isBattleActive ? "Battle Started!" : "Battle Ended!");
+    }
 
-    void DeleteAllShapes()
+    public void DeleteAllShapes()
     {
         GameObject[] allCubes = GameObject.FindGameObjectsWithTag("Cube");
         GameObject[] allSpheres = GameObject.FindGameObjectsWithTag("Sphere");
