@@ -27,11 +27,13 @@ Play sitting or standing as you use VR controllers to naturally interact with th
 
 This project demonstrates my VR development capabilities using Unity. It started as an experimental project with an old VR headset, aimed at learning VR development fundamentals, including VR interactions and physics-based mechanics. Over time, it evolved into a more interactive sandbox experience, incorporating dynamic object interactions and a battle system. The project showcases how VR can create immersive environments.
 
+
+
 ## Preview
 
 ![Gameplay Preview](images/preview1.png)
 
-|![Preview1](images/preview3.gif)|![Preview2](images/preview1.gif)|![Preview3](images/preview2.gif)|
+| ![Preview1](images/preview3.gif) | ![Preview2](images/preview1.gif) | ![Preview3](images/preview2.gif) |
 |:---:|:---:|:---:|
 
 ## Installation & Requirements
